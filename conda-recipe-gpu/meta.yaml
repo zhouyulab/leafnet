@@ -1,0 +1,31 @@
+package:
+  name: leafnet-gpu
+  version: 1.0.0
+
+source:
+  path: ..
+
+build:
+  number: 0
+
+requirements:
+  build:
+    - python=3.6
+    - pip
+
+  run:
+    - python=3.6
+    - h5py=2.10.0
+    - matplotlib=3.1.2
+    - numpy=1.18.1
+    - py-opencv=4.1.2
+    - opencv=4.1.2
+    - Pillow=7.0.0
+    - scikit-image=0.16.2
+    - scikit-learn=0.22.1
+    - scipy=1.4.1
+    - tensorflow-gpu=1.13.1
+
+about:
+  home: https://gitee.com/zhouyulab/leafnet
+  license: MIT

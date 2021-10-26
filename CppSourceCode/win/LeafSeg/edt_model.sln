@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "edt_model", "edt_model\edt_model.vcxproj", "{FDB7CDBA-2012-43F1-9E1B-006F9D5F6937}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FDB7CDBA-2012-43F1-9E1B-006F9D5F6937}.Debug|x64.ActiveCfg = Debug|x64
+		{FDB7CDBA-2012-43F1-9E1B-006F9D5F6937}.Debug|x64.Build.0 = Debug|x64
+		{FDB7CDBA-2012-43F1-9E1B-006F9D5F6937}.Debug|x86.ActiveCfg = Debug|Win32
+		{FDB7CDBA-2012-43F1-9E1B-006F9D5F6937}.Debug|x86.Build.0 = Debug|Win32
+		{FDB7CDBA-2012-43F1-9E1B-006F9D5F6937}.Release|x64.ActiveCfg = Release|x64
+		{FDB7CDBA-2012-43F1-9E1B-006F9D5F6937}.Release|x64.Build.0 = Release|x64
+		{FDB7CDBA-2012-43F1-9E1B-006F9D5F6937}.Release|x86.ActiveCfg = Release|Win32
+		{FDB7CDBA-2012-43F1-9E1B-006F9D5F6937}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6B004E46-65C2-4D3E-BA33-F1471DD3D735}
+	EndGlobalSection
+EndGlobal
