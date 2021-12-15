@@ -10,7 +10,7 @@ def itk_morphological_watershed(input_array:np.ndarray, level:float)->np.ndarray
     '''
     Perform ITK morphological watershed on input image.
     args:
-        input_array - Input 8-bit grayscale image.
+        input_array - Input float grayscale image.
         level - Level for ITK morphological watershed.
     return:
         Pixel-wise label for segmentation.

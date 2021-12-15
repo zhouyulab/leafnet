@@ -1,3 +1,4 @@
+import warnings
 import numpy as np
 import math
 from scipy.ndimage.filters import gaussian_filter
@@ -52,15 +53,27 @@ def generate_heatmap(normalized_sample_image, model_object, model_input_shape, m
 
     return result_array
 
-def clusting_heatmap(heatmap_array, stoma_size_correction_ratio):
+def clusting_heatmap(heatmap_array, stoma_size_correction_ratio, dbs_scale_key):
+    heatmap_thres = 0.50
+    dbs_eps = 10
+    dbs_min_samples = 40
+    if (dbs_scale_key == "SMALL_DBS"):
+        heatmap_thres = 0.70
+        dbs_eps = 5
+        dbs_min_samples = 60
+    elif (dbs_scale_key == "LARGE_DBS"):
+        heatmap_thres = 0.30
+        dbs_eps = 15
+        dbs_min_samples = 40
+
     # Generate a List of Dots With More Than 50% Possibility of Being in a Stoma
-    stoma_dots = np.where(heatmap_array>0.70)
+    stoma_dots = np.where(heatmap_array>heatmap_thres)
     dots_score = heatmap_array[stoma_dots]
     dots_arr = np.array(stoma_dots).transpose()
     if dots_arr.shape[0] == 0:
         return list()
     # Cluster Dots
-    db = DBSCAN(eps=5, min_samples=60)
+    db = DBSCAN(eps=dbs_eps, min_samples=dbs_min_samples)
     db.fit(dots_arr, sample_weight=dots_score)
     stoma_list = list()
     # label -1 means Noise, removed.
@@ -95,6 +108,17 @@ class stoma_detector:
         else:
             self.enabled = True
             self.model_object = load_model(os.path.join(os.path.dirname(__file__), r'models', model_name + r'.model'))
+            self.dbs_scale_key = "NORMAL_DBS"
+            try:
+                with open(os.path.join(os.path.join(os.path.dirname(__file__), r'models', model_name + r'.res'))) as model_meta_file: 
+                    model_meta = model_meta_file.readlines()
+                    meta_dbs_scale_key = model_meta[1].strip()
+                    if (meta_dbs_scale_key == "SMALL_DBS" or meta_dbs_scale_key == "NORMAL_DBS" or meta_dbs_scale_key == "LARGE_DBS" ):
+                        self.dbs_scale_key = meta_dbs_scale_key
+                    else:
+                        warnings.warn("Unknown DBS Scale key: ["+ meta_dbs_scale_key+"].")
+            except:
+                warnings.warn("Could not load DBS Scale key.")
             self.model_input_shape = self.model_object.input_shape[1]
             self.model_output_shape = self.model_object.output_shape[1]
             self.stoma_size_correction_ratio = 0.85
@@ -112,7 +136,7 @@ class stoma_detector:
         result_array = gaussian_filter(result_array, 2)
         
         # Use PCA on Stoma List(dot list) to Generate PCA Stoma List[stoma_center_0, stoma_center_1, stoma_length, stoma_width, stoma_angle]
-        stoma_list = clusting_heatmap(result_array, self.stoma_size_correction_ratio)
+        stoma_list = clusting_heatmap(result_array, self.stoma_size_correction_ratio, self.dbs_scale_key)
 
         corrected_stoma_list = list()
 

@@ -21,9 +21,9 @@ LeafNet has been tested under Linux, Mac OS Catalina (10.15), and Windows 10 wit
   pip install itk==5.2
 
   # then you can use LeafNet now
-  leafnet_gui
+  leafnet-gui
   # or with command-line
-  leafnet_cli
+  leafnet-cli
   ```
 
 ### Install manually
