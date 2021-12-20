@@ -122,8 +122,7 @@ For bright field images of *Arabidopsis thaliana* leaf epidermal peel like sampl
 
 #### Stoma detector
 
-* Stoma detector (--sd "StomaNet"): Select from "StomaNet", "StomaNetConfocal", and "StomaNetUniversal". This is the model to recognize stoma. Use "StomaNet" for bright field images of *Arabidopsis thaliana* leaf epidermal peel and other similar images, use "StomaNetConfocal" for max intensity z-projection of confocal stack, and use "StomaNetUniversal" for all other conditions. We also suggest to try StomaNetUniversal when the image is too noisy for StomaNet/StomaNetConfocal to perform well.
-* Select "None" for Stoma detector to skip stomata detection and run LeafSeg alone.
+* Stoma detector (--sd "StomaNet"): Select from "StomaNet", "StomaNetConfocal", "StomaNetUniversal", and "None". This is the model to recognize stoma. Use "StomaNet" for bright field images of *Arabidopsis thaliana* leaf epidermal peel and other similar images, use "StomaNetConfocal" for max intensity z-projection of confocal stack, and use "StomaNetUniversal" for all other conditions. We also suggest to try StomaNetUniversal when the image is too noisy for StomaNet/StomaNetConfocal to perform well. Users could also use "None" to skip stomata detection.
 * Min size (--min_ss=20): Stomata smaller than this size (μm^2) will be ignored.
 * Max size (--max_ss=1500): Stomata larger than this size (μm^2) will be ignored.
 * Max length/width ratio (--max_sa=5): Stomata with a length/width ratio above this value will be deleted.
@@ -133,6 +132,10 @@ For bright field images of *Arabidopsis thaliana* leaf epidermal peel like sampl
 * Cell divider (--cd="LeafSeg"): "LeafSeg" or "ITKMorphologicalWatershed", the algorithm to segment cells. We suggest to use LeafSeg for all conditions, we added ITK Morphological Watershed here just for comparison.
 * Divider threshold (--sd_ts=60): For LeafSeg, threshold means the minimum score for a cell boundary to be kept in the segmentation, from 0 (all boundaries will be kept) to 100 (only boundaries with full score will be kept). For ITK Morphological Watershed, this value is directly used as segmentation level.
 * Min cell size (--min_cs=85): Cells smaller than this size (μm^2) will be ignored and merged into nearby cells.
+
+#### Run LeafSeg alone
+
+* LeafSeg can be run in standalone mode with command "leafnet-cli --sd None --cd LeafSeg" by skipping stomata detection. 
 
 ## Training models
 
@@ -177,21 +180,25 @@ The process below is a suggested way to generate annotation for image. Refer to 
   * Duplicate sample by adding mirrored image (--duplicate_mirror): With this argument, input images will be duplicated by 2x by adding mirrored images.
   * Duplicate sample by adding rotated image (--duplicate_rotate): With this argument, input images will be duplicated by x by adding rotated(90, 180 and 270 degrees) samples.
   
-### Use PlantSeg with CNNwall
+### Use LeafNet with CNNwall
 
-* Currently, CNNwall is provided in the seperate directory in LeafNet repo.
-* To segment image with CNNwall:
-  1. Use LeafNet regularly to identify stomata.
-  2. Use *CNNwall\denoise_image_for_cnnwall.py* to denoise the image for input, images will also be converted to tiff for PlantSeg.
-    > python CNNwall\denoise_image_for_cnnwall.py [PathToInputFolder] [PathToDenoisedOutput]
-  3. Use PlantSeg with the model in *CNNwall\CNNwallModel* to generate prediction.
-  4. Use *CNNwall\prediction_h5_to_png.py* to convert prediction to png image for PlantSeg
-    > python CNNwall\denoise_image_for_cnnwall.py [PredictionFolderOfPlantSeg] [PathToPNGOutput]
-  5. Use LeafNet to segment pavement cells on prediction
-    > Set background type to Dark, image denoiser to none, stoma detector to None.
-  6. Combine the stomata detection result and pavement cell segmentation result.
+* Currently, CNNwall is provided in a seperate directory (CNNwall) in LeafNet repo.
+* To segment images with CNNwall:
+1. Use LeafNet regularly to identify stomata.
+2. Use *CNNwall/denoise_image_for_cnnwall.py* to denoise the input images and the images will be converted to tiff for PlantSeg.
+  ```bash
+  python CNNwall/denoise_image_for_cnnwall.py [PathToInputFolder] [PathToDenoisedOutput]
+  ```
+3. Use PlantSeg with the model *CNNwall/CNNwallModel* to generate predictions.
+4. Use *CNNwall/prediction_h5_to_png.py* to convert predictions to png images for LeafNet.
+  ```bash
+  python CNNwall/denoise_image_for_cnnwall.py [PredictionFolderOfPlantSeg] [PathToPNGOutput]
+  ```
+5. Use LeafNet to segment pavement cells on predictions.
+  > Set background type to Dark, image denoiser to none, and stoma detector to None.
+6. Combine the results of stomata detection and pavement cell segmentation.
 
 ## Contacts
 
-If you have any questions or suggestions, please contact Dr. Yu Zhou (yu.zhou@whu.edu.cn) at Wuhan University.
+If you have any questions or suggestions, please contact Shaopeng Li (lishaopeng@whu.edu.cn) or Dr. Yu Zhou (yu.zhou@whu.edu.cn) at Wuhan University.
 
