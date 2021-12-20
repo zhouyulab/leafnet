@@ -1,0 +1,256 @@
+# use a fixed random seed to guarantee that when you run the code twice you will get the same outcome
+manual_seed: 0
+model:
+  name: UNet2D
+  # number of input channels to the model
+  in_channels: 1
+  # number of output channels
+  out_channels: 1
+  # determines the order of operators in a single layer (crg - Conv3d+ReLU+GroupNorm)
+  layer_order: gcr
+  # initial number of feature maps
+  f_maps: 64
+  # number of groups in the groupnorm
+  num_groups: 8
+  # apply element-wise nn.Sigmoid after the final 1x1x1 convolution, otherwise apply nn.Softmax
+  final_sigmoid: true
+  is_segmentation: true
+# loss function to be used during training
+loss:
+  name: BCEDiceLoss
+  # a target value that is ignored and does not contribute to the input gradient
+  ignore_index: null
+  # skip the last channel in the target (i.e. when last channel contains data not relevant for the loss)
+  skip_last_target: true
+optimizer:
+  # initial learning rate
+  learning_rate: 0.0002
+  # weight decay
+  weight_decay: 0.00001
+# evaluation metric
+eval_metric:
+  # use AdaptedRandError metric
+  name: BoundaryAdaptedRandError
+  # probability maps threshold
+  threshold: 0.4
+  # use the last target channel to compute the metric
+  use_last_target: true
+  # use only the first channel for computing the metric
+  use_first_input: true
+lr_scheduler:
+  name: ReduceLROnPlateau
+  # make sure to use the 'min' mode cause lower AdaptedRandError is better
+  mode: min
+  factor: 0.5
+  patience: 20
+trainer:
+  # model with lower eval score is considered better
+  eval_score_higher_is_better: False
+  # path to the checkpoint directory
+  checkpoint_dir: '/home/simonlsp/.plantseg_models/confocal_2D_unet_bce_dice_ds3x'
+  # path to latest checkpoint; if provided the training will be resumed from that checkpoint
+  resume: null
+  # how many iterations between validations
+  validate_after_iters: 50
+  # how many iterations between tensorboard logging
+  log_after_iters: 50
+  # max number of epochs
+  epochs: 10
+  # max number of iterations
+  iters: 150000
+# Configure training and validation loaders
+loaders:
+  batch_size: 10
+  # how many subprocesses to use for data loading
+  num_workers: 6
+  # path to the raw data within the H5
+  raw_internal_path: /raw
+  # path to the the label data withtin the H5
+  label_internal_path: /label
+  # configuration of the train loader
+  train:
+    # paths to the training datasets
+    file_paths:
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/0.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/1.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/2.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/4.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/5.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/6.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/8.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/9.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/10.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/12.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/13.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/14.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/16.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/17.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/18.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/20.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/21.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/22.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/24.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/25.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/26.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/28.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/29.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/30.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/32.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/33.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/34.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/36.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/37.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/38.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/40.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/41.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/42.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/44.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/45.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/46.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/48.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/49.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/50.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/52.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/53.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/54.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/56.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/57.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/58.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/60.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/61.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/62.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/64.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/65.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/66.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/68.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/69.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/70.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/72.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/73.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/74.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/76.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/77.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/78.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/80.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/81.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/82.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/84.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/85.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/86.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/88.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/89.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/90.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/92.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/93.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/94.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/96.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/97.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/98.h5'
+
+    # SliceBuilder configuration, i.e. how to iterate over the input volume patch-by-patch
+    slice_builder:
+      name: FilterSliceBuilder
+      # train patch size given to the network (adapt to fit in your GPU mem, generally the bigger patch the better)
+      patch_shape: [1, 256, 256]
+      # train stride between patches
+      stride_shape: [1, 128, 128]
+      # minimum volume of the labels in the patch
+      threshold: 0.5
+      # probability of accepting patches which do not fulfil the threshold criterion
+      slack_acceptance: 0.01
+      skip_shape_check: true
+
+    transformer:
+      raw:
+        - name: Standardize
+        - name: RandomFlip
+        - name: RandomRotate90
+        - name: RandomRotate
+          # rotate only in ZY plane due to anisotropy
+          axes: [[2, 1]]
+          angle_spectrum: 15
+          mode: reflect
+        - name: ElasticDeformation
+          spline_order: 3
+        - name: AdditiveGaussianNoise
+          execution_probability: 0.25
+        - name: AdditivePoissonNoise
+          execution_probability: 0.25
+        - name: ToTensor
+          expand_dims: true
+      label:
+        - name: RandomFlip
+        - name: RandomRotate90
+        - name: RandomRotate
+          # rotate only in ZY plane due to anisotropy
+          axes: [[2, 1]]
+          angle_spectrum: 15
+          mode: reflect
+        - name: ElasticDeformation
+          spline_order: 0
+        - name: StandardLabelToBoundary
+          # append original ground truth labels to the last channel (to be able to compute the eval metric)
+          append_label: true
+          # guassian blur and threshold the boundary map in order to help with overfitting
+          blur: true
+          # stddev of Gaussian kernel
+          sigma: 1.0
+        - name: ToTensor
+          expand_dims: false
+
+  # configuration of the val loader
+  val:
+    # paths to the val datasets
+    file_paths:
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/3.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/7.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/11.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/15.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/19.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/23.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/27.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/31.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/35.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/39.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/43.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/47.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/51.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/55.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/59.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/63.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/67.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/71.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/75.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/79.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/83.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/87.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/91.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/95.h5'
+      - '/mnt/d/develop/LeafNetReviewerDownload/Figure1/F1sample_SD_H5/99.h5'
+
+    # SliceBuilder configuration, i.e. how to iterate over the input volume patch-by-patch
+    slice_builder:
+      name: FilterSliceBuilder
+      # train patch size given to the network (adapt to fit in your GPU mem, generally the bigger patch the better)
+      patch_shape: [1, 256, 256]
+      # train stride between patches
+      stride_shape: [1, 256, 256]
+      # minimum volume of the labels in the patch
+      threshold: 0.5
+      # probability of accepting patches which do not fulfil the threshold criterion
+      slack_acceptance: 0.0
+      skip_shape_check: true
+
+    # data augmentation
+    transformer:
+      raw:
+        - name: Standardize
+        - name: ToTensor
+          expand_dims: true
+      label:
+        - name: StandardLabelToBoundary
+          append_label: true
+          blur: true
+          sigma: 1.0
+        - name: ToTensor
+          expand_dims: false

@@ -10,13 +10,15 @@ LeafNet has been tested under Linux, Mac OS Catalina (10.15), and Windows 10 wit
 
 ### Install with Conda (Recommended)
   ```bash
-  # Install LeafNet CPU version
-  conda create -n leafnet_env -c anaconda -c conda-forge -c zhouyulab leafnet
-  # or install GPU version
-  conda create -n leafnet_env -c anaconda -c conda-forge -c zhouyulab leafnet-gpu
-  
-  # Activate the conda enviornment
+  # Create a python 3.6 enviorment for installation (suggested)
+  conda create -n leafnet_env python=3.6
   conda activate leafnet_env
+
+  # Install LeafNet CPU version
+  conda install -c anaconda -c conda-forge -c zhouyulab leafnet
+  # or install GPU version
+  conda install -c anaconda -c conda-forge -c zhouyulab leafnet-gpu
+
   # Install ITK 5.2 if you wants to compare LeafSeg with ITK Morphological watershed
   pip install itk==5.2
 
@@ -121,6 +123,7 @@ For bright field images of *Arabidopsis thaliana* leaf epidermal peel like sampl
 #### Stoma detector
 
 * Stoma detector (--sd "StomaNet"): Select from "StomaNet", "StomaNetConfocal", and "StomaNetUniversal". This is the model to recognize stoma. Use "StomaNet" for bright field images of *Arabidopsis thaliana* leaf epidermal peel and other similar images, use "StomaNetConfocal" for max intensity z-projection of confocal stack, and use "StomaNetUniversal" for all other conditions. We also suggest to try StomaNetUniversal when the image is too noisy for StomaNet/StomaNetConfocal to perform well.
+* Select "None" for Stoma detector to skip stomata detection and run LeafSeg alone.
 * Min size (--min_ss=20): Stomata smaller than this size (μm^2) will be ignored.
 * Max size (--max_ss=1500): Stomata larger than this size (μm^2) will be ignored.
 * Max length/width ratio (--max_sa=5): Stomata with a length/width ratio above this value will be deleted.
@@ -174,7 +177,19 @@ The process below is a suggested way to generate annotation for image. Refer to 
   * Duplicate sample by adding mirrored image (--duplicate_mirror): With this argument, input images will be duplicated by 2x by adding mirrored images.
   * Duplicate sample by adding rotated image (--duplicate_rotate): With this argument, input images will be duplicated by x by adding rotated(90, 180 and 270 degrees) samples.
   
+### Use PlantSeg with CNNwall
 
+* Currently, CNNwall is provided in the seperate directory in LeafNet repo.
+* To segment image with CNNwall:
+  1. Use LeafNet regularly to identify stomata.
+  2. Use *CNNwall\denoise_image_for_cnnwall.py* to denoise the image for input, images will also be converted to tiff for PlantSeg.
+    > python CNNwall\denoise_image_for_cnnwall.py [PathToInputFolder] [PathToDenoisedOutput]
+  3. Use PlantSeg with the model in *CNNwall\CNNwallModel* to generate prediction.
+  4. Use *CNNwall\prediction_h5_to_png.py* to convert prediction to png image for PlantSeg
+    > python CNNwall\denoise_image_for_cnnwall.py [PredictionFolderOfPlantSeg] [PathToPNGOutput]
+  5. Use LeafNet to segment pavement cells on prediction
+    > Set background type to Dark, image denoiser to none, stoma detector to None.
+  6. Combine the stomata detection result and pavement cell segmentation result.
 
 ## Contacts
 
